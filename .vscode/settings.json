@@ -1,4 +1,5 @@
 {
   "css.validate": false,
-  "tailwindCSS.emmetCompiletions": true
+  "tailwindCSS.emmetCompiletions": true,
+  "editor.wordWrapColumn": 200
 }

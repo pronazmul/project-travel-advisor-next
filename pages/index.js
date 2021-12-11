@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Sidebar from './../components/Sidebar'
 import Map from './../components/Map'
-import async from './api/restaurants'
 
 export default function Home() {
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 })
   const [bounds, setBounds] = useState(null)
   const [places, setPlaces] = useState([])
+
+  console.log(places)
 
   // This is the function that gets the coordinates of the user
   useEffect(() => {
@@ -22,28 +23,32 @@ export default function Home() {
 
   // This is the function that gets the places around the user
   useEffect(async () => {
-    const URL =
-      'https://travel-advisor.p.rapidapi.com/restaurants/list-in-boundary'
-    var options = {
-      params: {
-        bl_latitude: (bounds && bounds.sw.lat) || 0,
-        tr_latitude: (bounds && bounds.ne.lat) || 0,
-        bl_longitude: (bounds && bounds.sw.lng) || 0,
-        tr_longitude: (bounds && bounds.ne.lng) || 0,
-      },
-      headers: {
-        'x-rapidapi-host': 'travel-advisor.p.rapidapi.com',
-        'x-rapidapi-key': '77fd730c60msh8f8db5dad425e5bp1e4b3ajsndfa7f3928ac3',
-      },
-    }
     try {
-      axios.get(URL, options).then((res) => {
-        setPlaces(res.data.data)
-      })
+      const URL =
+        'https://travel-advisor.p.rapidapi.com/restaurants/list-in-boundary'
+      var options = {
+        params: {
+          bl_latitude: (bounds && bounds.sw.lat) || 0,
+          tr_latitude: (bounds && bounds.ne.lat) || 0,
+          bl_longitude: (bounds && bounds.sw.lng) || 0,
+          tr_longitude: (bounds && bounds.ne.lng) || 0,
+        },
+        headers: {
+          'x-rapidapi-host': 'travel-advisor.p.rapidapi.com',
+          'x-rapidapi-key':
+            '2244c18308msh9024c28bfe14e67p1066c7jsnf8fe3dd2c3d1',
+        },
+      }
+      let {
+        data: { data: places },
+      } = await axios.get(URL, options)
+      if (places && places.length > 0) {
+        setPlaces(places)
+      }
     } catch (error) {
       console.log(error)
     }
-  }, [bounds])
+  }, [coordinates])
   return (
     <div>
       <Head>
@@ -55,7 +60,7 @@ export default function Home() {
           <Header />
         </div>
         <div className='col-span-3'>
-          <Sidebar places={places} />
+          <Sidebar places={places || []} />
         </div>
         <div className='col-span-7 h-screen'>
           <Map
